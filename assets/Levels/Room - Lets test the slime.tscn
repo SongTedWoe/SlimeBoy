@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://1u4y3rtgph4d"]
+
+[ext_resource type="PackedScene" uid="uid://b3y1q7egn20f1" path="res://assets/Levels/BaseRoom.tscn" id="1_040yj"]
+
+[node name="Room" instance=ExtResource("1_040yj")]
+
+[node name="LevelCamera" parent="." index="2"]
+zoom = Vector2(4, 4)

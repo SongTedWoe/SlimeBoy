@@ -1,0 +1,107 @@
+[gd_scene load_steps=9 format=3 uid="uid://b3y1q7egn20f1"]
+
+[ext_resource type="Script" path="res://assets/Levels/Room.gd" id="1_6tbne"]
+[ext_resource type="PackedScene" uid="uid://dndit668on3ap" path="res://assets/Scenes/Managers/DialogManager.tscn" id="2_jwnjp"]
+[ext_resource type="PackedScene" uid="uid://c3p22cvnqvaba" path="res://assets/Scenes/Pipes/Level_End_Pipe.tscn" id="3_0mrw6"]
+[ext_resource type="PackedScene" uid="uid://degh6iuglur18" path="res://assets/Scenes/SlimeStand.tscn" id="4_uupy6"]
+[ext_resource type="TileSet" uid="uid://dg3fy6qvdpv0m" path="res://assets/TileMap/GlassTileSet.tres" id="6_0awg8"]
+[ext_resource type="PackedScene" uid="uid://benk3e8jar60j" path="res://assets/Scenes/player.tscn" id="6_r48hb"]
+[ext_resource type="AudioStream" uid="uid://qs22juel70ld" path="res://assets/Audio/good night slimeboy.wav" id="7_6w0i2"]
+[ext_resource type="AudioStream" uid="uid://beuea8hx57ixm" path="res://assets/Audio/SlimeBoy.wav" id="8_s3xcw"]
+
+[node name="Room" type="Node2D" node_paths=PackedStringArray("introCamera", "levelCamera", "outroCamera", "player", "introSlimeStand", "outroSlimeStand", "dialogManager", "levelMusic", "outroSound")]
+script = ExtResource("1_6tbne")
+introCamera = NodePath("IntroCamera")
+levelCamera = NodePath("LevelCamera")
+outroCamera = NodePath("OutroCamera")
+player = NodePath("Player")
+introSlimeStand = NodePath("IntroSlimeStand")
+outroSlimeStand = NodePath("OutroSlimeStand")
+dialogManager = NodePath("DialogManager")
+levelMusic = NodePath("LevelMusic")
+outroSound = NodePath("OutroMusic")
+
+[node name="TransitionCamera" type="Camera2D" parent="."]
+
+[node name="IntroCamera" type="Camera2D" parent="."]
+position = Vector2(-540, 0)
+zoom = Vector2(4, 4)
+position_smoothing_enabled = true
+
+[node name="LevelCamera" type="Camera2D" parent="."]
+position_smoothing_enabled = true
+
+[node name="OutroCamera" type="Camera2D" parent="."]
+position = Vector2(648, 0)
+zoom = Vector2(4, 4)
+position_smoothing_enabled = true
+
+[node name="DialogManager" parent="." instance=ExtResource("2_jwnjp")]
+
+[node name="Player" parent="." instance=ExtResource("6_r48hb")]
+position = Vector2(-386, -8)
+
+[node name="LevelEndPipe" parent="." instance=ExtResource("3_0mrw6")]
+z_index = 3
+position = Vector2(448, -11)
+
+[node name="IntroSlimeStand" parent="." instance=ExtResource("4_uupy6")]
+position = Vector2(-540, 0)
+standOnLeft = false
+
+[node name="OutroSlimeStand" parent="." instance=ExtResource("4_uupy6")]
+position = Vector2(648, 0)
+outro = true
+
+[node name="TileMap" type="Node2D" parent="."]
+
+[node name="Ground" type="TileMapLayer" parent="TileMap"]
+use_parent_material = true
+tile_set = ExtResource("6_0awg8")
+
+[node name="Background" type="TileMapLayer" parent="TileMap"]
+z_index = -5
+use_parent_material = true
+tile_set = ExtResource("6_0awg8")
+
+[node name="Shine" type="TileMapLayer" parent="TileMap"]
+z_index = -1
+use_parent_material = true
+tile_set = ExtResource("6_0awg8")
+
+[node name="ForeGround" type="TileMapLayer" parent="TileMap"]
+z_index = 4
+use_parent_material = true
+tile_set = ExtResource("6_0awg8")
+
+[node name="Frame" type="TileMapLayer" parent="TileMap"]
+z_index = 1
+use_parent_material = true
+tile_set = ExtResource("6_0awg8")
+
+[node name="Honey" type="TileMapLayer" parent="TileMap"]
+z_index = 4
+use_parent_material = true
+tile_set = ExtResource("6_0awg8")
+
+[node name="EntryPipe" type="TileMapLayer" parent="TileMap"]
+z_index = 5
+use_parent_material = true
+tile_set = ExtResource("6_0awg8")
+
+[node name="ExitPipe" type="TileMapLayer" parent="TileMap"]
+z_index = 5
+use_parent_material = true
+tile_set = ExtResource("6_0awg8")
+
+[node name="Scenes" type="TileMapLayer" parent="TileMap"]
+use_parent_material = true
+tile_set = ExtResource("6_0awg8")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="TileMap" groups=["Slippery"]]
+
+[node name="OutroMusic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_6w0i2")
+
+[node name="LevelMusic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_s3xcw")

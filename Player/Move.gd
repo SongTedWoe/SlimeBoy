@@ -24,13 +24,15 @@ func enter(_msg:={}):
 	no_physics_update_yet = true
 	animation_started = false
 	
+	player.showInteractionDisplay()
+	
 	#initiate_walk = false
 	#if _msg.has("walkStart"):
 	#	initiate_walk = _msg["walkStart"]
 		
 func exit():
 	player.animation_tree.set("parameters/Walking Transition/transition_request", "walk start")
-	pass
+	player.hideInteractionDisplay()
 
 func update(delta:float):
 	if no_physics_update_yet:
@@ -60,8 +62,15 @@ func update(delta:float):
 		animation_started = true
 
 func physics_update(delta: float):
+	#Slippery Ground Check
+	var col = player.move_and_collide(player.down, true)
+	if col != null:
+		if col.get_collider().is_in_group(&"Slippery"):
+			transitionToAir()
+			
 	# check if floor is missing
-	player.velocity += player.down * player.gravity * delta
+	var downPressed = Input.is_action_pressed(crouchDirection)
+	player.velocity += player.down * player.ground_gravity * delta * (10 if downPressed else 1)
 	player.velocity = player.velocity.limit_length(player.MAX_FALL_SPEED)
 	
 	var direction = Input.get_axis(leftDirection, rightDirection)

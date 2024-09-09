@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=3 uid="uid://bcb0ayalwkhua"]
+
+[ext_resource type="TileSet" uid="uid://dg3fy6qvdpv0m" path="res://assets/TileMap/GlassTileSet.tres" id="1_odoqo"]
+
+[node name="TileMap" type="TileMap"]
+tile_set = ExtResource("1_odoqo")
+format = 2
+layer_0/name = "Ground"
+layer_1/name = "Background"
+layer_1/z_index = -5
+layer_2/name = "Shine"
+layer_2/z_index = -1
+layer_3/name = "ForeGround"
+layer_3/z_index = 4
+layer_4/name = "Frame"
+layer_4/z_index = 1
+layer_5/name = "Honey"
+layer_5/z_index = 4
+layer_6/name = "EntryPipe"
+layer_6/z_index = 5
+layer_7/name = "ExitPipe"
+layer_7/z_index = 5
+layer_8/name = "Scenes"

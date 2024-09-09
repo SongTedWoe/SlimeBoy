@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://bsw7bh7jgb5bq"
+path="res://.godot/imported/bounce 2.wav-b5c2fc58ea8e9ec1b1744125ef78a7c4.sample"
+
+[deps]
+
+source_file="res://assets/Audio/bounce 2.wav"
+dest_files=["res://.godot/imported/bounce 2.wav-b5c2fc58ea8e9ec1b1744125ef78a7c4.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=true
+force/max_rate_hz=48000.0
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

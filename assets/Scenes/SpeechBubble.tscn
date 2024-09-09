@@ -1,0 +1,140 @@
+[gd_scene load_steps=11 format=3 uid="uid://de5hvbvm0a5un"]
+
+[ext_resource type="Script" path="res://DialogSystem/SpeechBubble.gd" id="1_vthas"]
+[ext_resource type="Texture2D" uid="uid://chgwhmiylrldk" path="res://assets/sprites/speechbubble.png" id="2_5nr2g"]
+[ext_resource type="FontFile" uid="uid://c31h0u1wxd6ob" path="res://assets/Fonts/Pixeled.ttf" id="3_v8ac4"]
+[ext_resource type="Texture2D" uid="uid://fxgtirs604um" path="res://assets/sprites/UI-symbols.png" id="4_mna32"]
+
+[sub_resource type="Animation" id="Animation_x7jf3"]
+resource_name = "HideAdvance"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AdvanceHint:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_yths6"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AdvanceHint:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_p8gnm"]
+resource_name = "ShowAdvance"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AdvanceHint:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_s2gsv"]
+_data = {
+"HideAdvance": SubResource("Animation_x7jf3"),
+"RESET": SubResource("Animation_yths6"),
+"ShowAdvance": SubResource("Animation_p8gnm")
+}
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mnbwf"]
+atlas = ExtResource("4_mna32")
+region = Rect2(0, 0, 6, 6)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3k8ja"]
+texture = SubResource("AtlasTexture_mnbwf")
+
+[node name="SpeechBubble" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_vthas")
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("2_5nr2g")
+region_rect = Rect2(0, 0, 500, 300)
+patch_margin_left = 200
+patch_margin_top = 150
+patch_margin_right = 110
+patch_margin_bottom = 125
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+custom_minimum_size = Vector2(800, 300)
+layout_mode = 1
+offset_right = 800.0
+offset_bottom = 300.0
+theme_override_constants/margin_left = 185
+theme_override_constants/margin_top = 70
+theme_override_constants/margin_right = 70
+theme_override_constants/margin_bottom = 75
+
+[node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer"]
+layout_mode = 2
+theme_override_colors/default_color = Color(0.666667, 0.737255, 0.54902, 1)
+theme_override_fonts/normal_font = ExtResource("3_v8ac4")
+theme_override_fonts/mono_font = ExtResource("3_v8ac4")
+theme_override_fonts/italics_font = ExtResource("3_v8ac4")
+theme_override_fonts/bold_italics_font = ExtResource("3_v8ac4")
+theme_override_fonts/bold_font = ExtResource("3_v8ac4")
+theme_override_font_sizes/bold_italics_font_size = 12
+theme_override_font_sizes/italics_font_size = 12
+theme_override_font_sizes/mono_font_size = 12
+theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/bold_font_size = 14
+bbcode_enabled = true
+text = "lol"
+scroll_active = false
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_s2gsv")
+}
+
+[node name="AdvanceHint" type="Panel" parent="."]
+visible = false
+modulate = Color(0.972549, 0.690196, 0.933333, 1)
+custom_minimum_size = Vector2(6, 6)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -102.0
+offset_top = -94.0
+offset_right = -70.0
+offset_bottom = -62.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxTexture_3k8ja")

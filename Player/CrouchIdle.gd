@@ -17,9 +17,13 @@ func enter(_msg:={}):
 	crouchDirection = player.crouchDirection
 	
 	player.animation_tree.set("parameters/crouch moving/blend_amount", false)
+	player.showInteractionDisplay()
+
+func exit():
+	player.hideInteractionDisplay()
 
 func update(delta: float):
-	if not Input.is_action_pressed(crouchDirection):
+	if not Input.is_action_pressed(crouchDirection) and player.canStandUp():
 		state_machine.transition_to("Uncrouch")
 		return
 		
@@ -28,7 +32,14 @@ func update(delta: float):
 		return
 
 func physics_update(delta: float):
-	player.velocity += player.down * player.gravity * delta
+	#Slippery Ground Check
+	var col = player.move_and_collide(player.down, true)
+	if col != null:
+		if col.get_collider().is_in_group(&"Slippery"):
+			transitionToAir()
+	
+	#normal Movement 
+	player.velocity += player.down * player.ground_gravity * delta
 	player.move_and_slide()
 	
 	if not player.is_on_Ground():

@@ -1,0 +1,49 @@
+[gd_scene load_steps=3 format=3 uid="uid://dndit668on3ap"]
+
+[ext_resource type="Script" path="res://DialogSystem/DialogManager.gd" id="1_hvnut"]
+[ext_resource type="PackedScene" uid="uid://de5hvbvm0a5un" path="res://assets/Scenes/SpeechBubble.tscn" id="2_3e32r"]
+
+[node name="DialogManager" type="Node" node_paths=PackedStringArray("left", "right", "center")]
+script = ExtResource("1_hvnut")
+left = NodePath("DialogUI/UIOverlay/Left Bubble")
+right = NodePath("DialogUI/UIOverlay/Right Bubble")
+center = NodePath("DialogUI/UIOverlay/Center Bubble")
+
+[node name="DialogUI" type="CanvasLayer" parent="."]
+
+[node name="UIOverlay" type="Control" parent="DialogUI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Left Bubble" parent="DialogUI/UIOverlay" instance=ExtResource("2_3e32r")]
+visible = false
+layout_mode = 1
+offset_left = 25.0
+offset_top = 395.0
+offset_right = -255.0
+offset_bottom = -25.0
+
+[node name="Right Bubble" parent="DialogUI/UIOverlay" instance=ExtResource("2_3e32r")]
+visible = false
+layout_mode = 1
+offset_left = 255.0
+offset_top = 395.0
+offset_right = -25.0
+offset_bottom = -25.0
+
+[node name="Center Bubble" parent="DialogUI/UIOverlay" instance=ExtResource("2_3e32r")]
+visible = false
+layout_mode = 1
+offset_left = 25.0
+offset_top = 395.0
+offset_right = -25.0
+offset_bottom = -25.0
+
+[node name="AdvanceTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="ShowAdvanceHintTimer" type="Timer" parent="."]

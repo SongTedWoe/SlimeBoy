@@ -1,9 +1,14 @@
 class_name Spring extends Node2D
 
-@export var Strength := 200.0
-@export var direction := Vector2.UP
+@export var springData : SpringData
 
 @onready var Animation_Player := $AnimationPlayer
+@onready var audioPlayer = $AudioStreamPlayer2D
+
 
 func playSpringAnimation():
 	Animation_Player.play("Spring")
+	audioPlayer.play()
+
+func getSpringData() -> SpringData:
+	return springData

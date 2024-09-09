@@ -1,0 +1,37 @@
+[gd_scene load_steps=2 format=3 uid="uid://7v45ab5yw2d3"]
+
+[ext_resource type="PackedScene" uid="uid://de5hvbvm0a5un" path="res://assets/Scenes/SpeechBubble.tscn" id="1_awqcn"]
+
+[node name="DialogUI" type="CanvasLayer"]
+
+[node name="UIOverlay" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Left Bubble" parent="UIOverlay" instance=ExtResource("1_awqcn")]
+visible = false
+layout_mode = 1
+offset_left = 25.0
+offset_top = 395.0
+offset_right = -255.0
+offset_bottom = -25.0
+
+[node name="Right Bubble" parent="UIOverlay" instance=ExtResource("1_awqcn")]
+visible = false
+layout_mode = 1
+offset_left = 255.0
+offset_top = 395.0
+offset_right = -25.0
+offset_bottom = -25.0
+
+[node name="Center Bubble" parent="UIOverlay" instance=ExtResource("1_awqcn")]
+visible = false
+layout_mode = 1
+offset_left = 25.0
+offset_top = 395.0
+offset_right = -25.0
+offset_bottom = -25.0

@@ -6,7 +6,7 @@ func enter(_msg := {}):
 
 func update(delta:float):
 	if Input.is_key_pressed(KEY_SPACE):
-		get_tree().reload_current_scene()
+		GameManager.reset()
 
 func physics_update(delta:float):
 	player.velocity = Vector2.DOWN

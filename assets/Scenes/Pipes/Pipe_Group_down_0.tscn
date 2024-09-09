@@ -1,0 +1,50 @@
+[gd_scene load_steps=9 format=3 uid="uid://b3coa4i32aefd"]
+
+[ext_resource type="Script" path="res://Pipe.gd" id="1_rbvqo"]
+[ext_resource type="Script" path="res://scripts/HideOnReady.gd" id="2_q7bgr"]
+[ext_resource type="Texture2D" uid="uid://fxgtirs604um" path="res://assets/sprites/UI-symbols.png" id="3_c0c5x"]
+[ext_resource type="Texture2D" uid="uid://df8rjhs1ye5rs" path="res://assets/sprites/TileMap4.png" id="3_x5mce"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1xuci"]
+radius = 1.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_58m7v"]
+atlas = ExtResource("3_x5mce")
+region = Rect2(224, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kc3cr"]
+atlas = ExtResource("3_c0c5x")
+region = Rect2(66, 0, 6, 6)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o5rhy"]
+atlas = ExtResource("3_x5mce")
+region = Rect2(224, 128, 16, 16)
+
+[node name="Pipe" type="Area2D" node_paths=PackedStringArray("highLightNode") groups=["Pipe"]]
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("1_rbvqo")
+down = Vector2(0, 1)
+highLightNode = NodePath("HighLight")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_1xuci")
+
+[node name="HideOnReady" type="Node2D" parent="."]
+modulate = Color(1, 1, 1, 0.490196)
+z_index = 1000
+script = ExtResource("2_q7bgr")
+
+[node name="Sprite2D" type="Sprite2D" parent="HideOnReady"]
+texture = SubResource("AtlasTexture_58m7v")
+
+[node name="Sprite2D2" type="Sprite2D" parent="HideOnReady"]
+position = Vector2(-5, -1)
+texture = SubResource("AtlasTexture_kc3cr")
+
+[node name="HighLight" type="Node2D" parent="."]
+
+[node name="Sprite2D3" type="Sprite2D" parent="HighLight"]
+position = Vector2(0, 7)
+texture = SubResource("AtlasTexture_o5rhy")

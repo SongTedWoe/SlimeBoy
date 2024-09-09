@@ -21,7 +21,7 @@ func exit():
 	#player.animation_player.animation_finished.disconnect(onAnimationFinished)
 
 func physics_update(delta:float):
-	player.velocity = player.down * delta
+	player.velocity = player.down * player.ground_gravity * delta
 	player.move_and_slide()
 
 func onAnimationFinished(anim: StringName):

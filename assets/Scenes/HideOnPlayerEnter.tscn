@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://8u4fqrxb63xm"]
+
+[ext_resource type="Script" path="res://assets/Levels/Level Made/HideOnEnter.gd" id="1_mi3w8"]
+[ext_resource type="AudioStream" uid="uid://dbgdsei6w773l" path="res://assets/Audio/disappear.wav" id="2_tr0y4"]
+
+[node name="HideOnPlayerEnter" type="Area2D" node_paths=PackedStringArray("objectsToHide")]
+collision_layer = 0
+collision_mask = 16
+monitorable = false
+script = ExtResource("1_mi3w8")
+objectsToHide = [null, null]
+
+[node name="DisappearSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("2_tr0y4")
+bus = &"SFX"

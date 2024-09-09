@@ -1,24 +1,52 @@
 class_name Player
 extends CharacterBody2D
 
+enum JumpType{
+	Jump,
+	Target
+}
 
-@export var SPEED = 100.0
-@export var CROUCH_SPEED = 50.0
-@export var MAX_FALL_SPEED = 100.0
-@export var CLIMB_STRENGTH = 100.0
+@export var SPEED = 48.0
+@export var CROUCH_SPEED = 42.0
+@export var MAX_FALL_SPEED = 80.0
 @export var STARTING_DOWN := Vector2.DOWN
 
+@export var ground_gravity = 800
+@export var fall_gravity = 160
+@export var rise_gravity = 80
+@export var rise_leaning_angle = 15
 
-# Get the gravity from the project settings to be synced with RigidBody nodes.
-var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 @export var animation_player : AnimationPlayer
 @export var animation_tree : AnimationTree
+
+@export var startLevelWithoutAnimation := false
+@export var startRoomVisible := false
+@export var startWithBackPackVisible := false
+
 @onready var sprite := $Sprite2D
 @onready var rayCast2D := $RayCast2D
 @onready var groundCheck := $GroundRayCast2D
 @onready var stateMachine := $StateMachine
 @onready var PickupDetect := $PickupDetect as Area2D
 @onready var SpringDetect := $SpringDetect as Area2D
+@onready var PipeDetect := $PipeDetect as Area2D
+@onready var StandUpDetect = $StandUpDetect
+@onready var FloatyBits := $"Floaty Bit Modulation/Floaty Bit" as Sprite2D
+@onready var FloatyBitModulation = $"Floaty Bit Modulation"
+
+@onready var InteractionDisplay := $InteractionDisplay
+
+@onready var PickupSound = $PickupSound
+@onready var CrouchSound = $CrouchSound
+@onready var StandupSound = $StandupSound
+@onready var ClimbSound = $ClimbSound
+@onready var FallSound = $FallSound
+@onready var WalkSound1 = $WalkSound1
+@onready var WalkSound2 = $WalkSound2
+@onready var CrouchSound1 = $CrouchSound1
+@onready var CrouchSound2 = $CrouchSound2
+
+
 
 #facingRight is pointing horizontally to the right and vertically up
 var facingRight := true
@@ -36,6 +64,7 @@ var down : Vector2:
 			updateLeftRight()
 			#down_changed = true
 			updateVisualRotation()
+			_updateHighlighting()
 			waitForPhysicsProcess = false
 			
 			print("Down changed : ", down)
@@ -55,15 +84,45 @@ var climbing_strain := 0.0;
 var down_changed = false
 var waitForPhysicsProcess = false
 
+var currentSpringData : SpringData
+
+var interactionReady := false
+
+var hasPickup := false
+var pickupObject : Interactable
+
+var _active := false
+var active:
+	get:
+		return _active
+	set(value):
+		visible = value
+		_active = value
+		stateMachine.active = value
+
+func pausePlay():
+	active = false
+	visible = true
+
+func unpausePlay():
+	active = true
+
+func _ready():
+	active = false
+	visible = startRoomVisible
+	GameManager.registerPlayer(self)
+	FloatyBits.visible = startWithBackPackVisible
+
+func startLevel():
+	active = true
+	if not startLevelWithoutAnimation:
+		animation_tree.set("parameters/Level Enter One Shot/request", AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
+
 func _process(_delta: float):
+	if not active: return
 	if waitForPhysicsProcess:
 		if down_changed : updateVisualRotation()
-	if Input.is_key_pressed(KEY_R):
-		stateMachine.transition_to("Death")
 	#print("Current Animation: " + animation_player.current_animation)
-	
-	if Input.is_key_pressed(KEY_J):
-		animation_tree.set("parameters/Pickup One Shot/request", AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
 
 func _physics_process(_delta: float):
 	waitForPhysicsProcess = true
@@ -78,6 +137,8 @@ func updateFacing():
 		animationTreeFacingRight = not facingRight
 		switch_Animation = true
 		rayCast2D.target_position.x = abs(rayCast2D.target_position.x) * (-1 if facingRight else 1)
+	
+	FloatyBitModulation.scale = Vector2(1 if facingRight else -1 , 1)
 	
 	updateAnimation()
 
@@ -167,6 +228,10 @@ func is_on_Ground() -> bool:
 				return true
 	return false
 
+func canStandUp() -> bool:
+	print("has Overlapping bodies? ", StandUpDetect.has_overlapping_bodies(), " | has Overlapping areas? ", StandUpDetect.has_overlapping_areas())
+	return not StandUpDetect.has_overlapping_bodies()
+
 func goToWall():
 	velocity = (right if facingRight else left) * SPEED
 	move_and_slide()
@@ -190,91 +255,117 @@ func updateAnimation():
 		animation_tree.set("parameters/face_walk/blend_amount", oldAnimationTreeFacingRight)
 		animation_tree.set("parameters/face_walk start/blend_amount", oldAnimationTreeFacingRight)
 		animation_tree.set("parameters/face_pickup/blend_amount", oldAnimationTreeFacingRight)
+		animation_tree.set("parameters/face_spring/blend_amount", oldAnimationTreeFacingRight)
+		animation_tree.set("parameters/face_spring_start/blend_amount", oldAnimationTreeFacingRight)
+		animation_tree.set("parameters/face_spring_cooldown/blend_amount", oldAnimationTreeFacingRight)
+		animation_tree.set("parameters/face_pipe_entry/blend_amount", oldAnimationTreeFacingRight)
+		animation_tree.set("parameters/face_pipe_exit/blend_amount", oldAnimationTreeFacingRight)
+		animation_tree.set("parameters/face_level_enter/blend_amount", oldAnimationTreeFacingRight)
+		animation_tree.set("parameters/face_level_exit/blend_amount", oldAnimationTreeFacingRight)
 
 func forceAirState():
 	stateMachine.state.call_deferred("transitionToAir")
 
-func playAnimation(_name: String):
+#region Interaction
+var _interactables := [] as Array[Interactable]
+
+func onPipeEnter(body):
+	if body is Interactable:
+		_addInteractable(body)
+func onPipeExit(body):
+	if body is Interactable:
+		_removeInteractable(body)
+
+func _updateHighlighting():
+	if _interactables.size() != 0:
+		for inter in _interactables:
+			inter.hideHighLight()
+		for inter in _interactables:
+			if inter.isInteractable(down):
+				inter.showHighLight()
+				break
+
+func _addInteractable(i: Interactable):
+	_interactables.insert(0, i)
+	_updateHighlighting()
+
+func _removeInteractable(i: Interactable):
+	i.hideHighLight()
+	_interactables.erase(i)
+	_updateHighlighting()
+
+func hasInteraction() -> bool :
+	if _interactables.size() != 0:
+		for inter in _interactables:
+			if inter.isInteractable(down):
+				return true
+	return false
+
+func Interact():
+	if _interactables:
+		var currentInteraction : Interaction
+		for inter in _interactables:
+			if inter.isInteractable(down):
+				currentInteraction = inter.getInteraction()
+				break
+		if currentInteraction:
+			match currentInteraction.type:
+				Interaction.InteractionType.LEVEL_END:
+					stateMachine.transition_to("LevelEnd", currentInteraction.data)
+					
+				Interaction.InteractionType.PIPE:
+					stateMachine.transition_to("PipeTransport", {"start": currentInteraction.data.start, "target": currentInteraction.data.target, "down":currentInteraction.data.down})
+					
+				Interaction.InteractionType.PICKUP:
+					var interactable := currentInteraction.origin as Interactable
+					pickupObject = interactable
+					stateMachine.transition_to("Pickup", {"start": interactable.global_position})
+
+func pickup():
+	if pickupObject:
+		pickupObject.hideInteractable()
+		pickupObject.disableInteractable()
+		#_removeInteractable(interactable)
+		hasPickup = true
+		FloatyBits.visible = true
+		FloatyBits.texture = pickupObject.pickupTexture
+
+func dropPickup():
+	if hasPickup:
+		global_position = global_position.snapped(Vector2(8,8))
+		pickupObject.moveTo(global_position)
+		var tileMap: TileMap
+		pickupObject.showInteractable()
+		pickupObject.enableInteractable()
+		#_addInteractable(pickupObject)
+		pickupObject = null
+		hasPickup = false
+		FloatyBits.visible = false
+
+func showInteractionDisplay():
+	InteractionDisplay.show_all = true
+
+func hideInteractionDisplay():
+	InteractionDisplay.show_all = false
+
+func addInteraction():
 	pass
+#endregion
 
-func nextAnimation(_name:String):
-	pass
+func playFallSound():
+	if not FallSound.playing:
+		FallSound.play()
 
-func clearAnimation():
-	pass
+func playWalkSound():
+	if not (WalkSound1.playing or WalkSound2.playing):
+		if randf() >= 0.5:
+			WalkSound1.play()
+		else:
+			WalkSound2.play()
 
-func getAnimationName(animName: String) -> String:
-	return animName
-
-var _PickUpsInLevel
-var last_Pick_Up_Entered
-func on_body_enter(body):
-	
-	pass 
-
-'''
-var qeuedAnimation : String
-func playAnimation(_name: String):
-	if _name == "": return
-	
-	var animName = getAnimationName(_name)
-	
-	print("Play Animation: " + animName)
-	animation_player.play(animName)
-
-func nextAnimation(_name: String):
-	if _name == "" : return
-	
-	var animName = getAnimationName(_name)
-	
-	if animation_player.current_animation == "":
-		print("no Active Animation")
-		playAnimation(animName)
-	
-	var anim = animation_player.get_animation(animation_player.current_animation)
-	if anim and anim.loop_mode != Animation.LOOP_NONE:
-		print("Animation Next Check: Found Loop Mode: " + animation_player.current_animation)
-		playAnimation(animName) 
-		return
-	
-	var queue = animation_player.get_queue()
-	for el in queue:
-		print ("Animation Next Check: Looking at Loop Mode in Queue at Element: " + el)
-		anim = animation_player.get_animation(el)
-		if anim and anim.loop_mode != Animation.LOOP_NONE:
-			print("Animation Next Check: Found Loop Mode: " + el)
-			playAnimation(animName) 
-			return
-	
-	print("Queue Animation: " + animName)
-	animation_player.queue(animName)
-
-func updateAnimation():
-	var updatedAnimationName = getAnimationName(animation_player.current_animation)
-	if animation_player.current_animation != updatedAnimationName:
-		playAnimation(updatedAnimationName)
-		var time = animation_player.current_animation_position
-		animation_player.play(updatedAnimationName)
-		animation_player.seek(time)
-	#update Queue if necessary
-	var queue = animation_player.get_queue()
-	animation_player.clear_queue()
-	for el in queue:
-		updatedAnimationName = getAnimationName(el)
-		animation_player.queue(updatedAnimationName)
-
-func clearAnimation():
-	animation_player.clear_queue()
-	animation_player.stop()
-	animation_player.play("RESET")
-	animation_player.advance(0)
-
-func getAnimationName(animName: String) -> String:
-	if animName.ends_with("_left"):
-		animName = animName.substr(0, animName.length() - 5)
-	
-	var animation_name = animName
-	if (not facingRight and not switch_Animation) or (facingRight and switch_Animation): 
-		animation_name += "_left"
-	return animation_name
-'''
+func playCrouchSound():
+	if not (CrouchSound1.playing or CrouchSound2.playing):
+		if randf() >= 0.5:
+			CrouchSound1.play()
+		else:
+			CrouchSound2.play()

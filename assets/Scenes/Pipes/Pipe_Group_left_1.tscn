@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=3 uid="uid://do7vscn0oxrbc"]
+
+[ext_resource type="PackedScene" uid="uid://dggs5g31buwd8" path="res://assets/Scenes/Pipes/Pipe_Group_left_0.tscn" id="1_47g6o"]
+[ext_resource type="Texture2D" uid="uid://fxgtirs604um" path="res://assets/sprites/UI-symbols.png" id="2_ou7oy"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c8emw"]
+atlas = ExtResource("2_ou7oy")
+region = Rect2(12, 0, 6, 6)
+
+[node name="Pipe" instance=ExtResource("1_47g6o")]
+PipeGroup = 1
+
+[node name="Sprite2D2" parent="HideOnReady" index="1"]
+texture = SubResource("AtlasTexture_c8emw")

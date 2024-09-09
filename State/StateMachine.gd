@@ -7,6 +7,8 @@ signal transitioned(state_name)
 
 @onready var state: State = initial_state
 
+var active = true
+
 func _ready() -> void:
 	await(owner.ready)
 	for child in get_children():
@@ -14,13 +16,16 @@ func _ready() -> void:
 	state.enter()
 
 func _unhandled_input(event):
-	state.handle_input(event)
+	if active:
+		state.handle_input(event)
 
 func _process(delta):
-	state.update(delta)
+	if active :
+		state.update(delta)
 
 func _physics_process(delta):
-	state.physics_update(delta)
+	if active: 
+		state.physics_update(delta)
 
 func transition_to(target_state_name: String, msg: Dictionary = {}):
 	if not has_node(target_state_name):

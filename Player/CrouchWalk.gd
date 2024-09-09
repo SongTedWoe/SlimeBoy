@@ -24,15 +24,16 @@ func enter(_msg:={}):
 	animation_started = false
 	
 	player.animation_tree.set("parameters/Crouch Walking Transition/transition_request", "crouch walk start")
+	player.showInteractionDisplay()
 
 func exit():
-	pass
+	player.hideInteractionDisplay()
 
 func update(delta:float):
 	if no_physics_update_yet:
 		return
 	
-	if not Input.is_action_pressed(crouchDirection):
+	if not Input.is_action_pressed(crouchDirection) and player.canStandUp():
 		state_machine.transition_to("Uncrouch")
 		return
 	
@@ -50,9 +51,14 @@ func update(delta:float):
 		animation_started = true
 
 func physics_update(delta: float):
-	# check if floor is missing
-	player.velocity += player.down * player.gravity * delta
-	player.velocity = player.velocity.limit_length(player.MAX_FALL_SPEED)
+	#Slippery Ground Check
+	var col = player.move_and_collide(player.down, true)
+	if col != null:
+		if col.get_collider().is_in_group(&"Slippery"):
+			transitionToAir()
+	
+	player.velocity += player.down * player.ground_gravity * delta
+	player.velocity = player.velocity.limit_length(player.CROUCH_SPEED)
 	
 	var direction = Input.get_axis(leftDirection, rightDirection)
 	

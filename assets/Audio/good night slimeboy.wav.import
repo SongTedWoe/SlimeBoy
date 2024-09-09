@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://qs22juel70ld"
+path="res://.godot/imported/good night slimeboy.wav-21100128257565cd8a06771b504226bc.sample"
+
+[deps]
+
+source_file="res://assets/Audio/good night slimeboy.wav"
+dest_files=["res://.godot/imported/good night slimeboy.wav-21100128257565cd8a06771b504226bc.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=true
+force/max_rate_hz=48000.0
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

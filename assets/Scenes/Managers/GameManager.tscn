@@ -1,0 +1,20 @@
+[gd_scene load_steps=9 format=3 uid="uid://davbyylsf01dd"]
+
+[ext_resource type="Script" path="res://scripts/Managers/GameManager.gd" id="1_l48n6"]
+[ext_resource type="PackedScene" uid="uid://dvdaecmund6xp" path="res://assets/Levels/Level Made/Room - First Look.tscn" id="2_wn3dr"]
+[ext_resource type="PackedScene" uid="uid://b4ptbnwtcgp37" path="res://assets/Levels/Level Made/Room - Material testing.tscn" id="3_gjxmb"]
+[ext_resource type="PackedScene" uid="uid://crf58n1cj2rf3" path="res://assets/Levels/Level Made/Room - Moving Things.tscn" id="4_m0o4u"]
+[ext_resource type="PackedScene" uid="uid://bg55lx8yp3bfe" path="res://assets/Levels/MainMenu.tscn" id="4_wbxke"]
+[ext_resource type="PackedScene" uid="uid://cx6lf11x7wmnc" path="res://assets/Levels/Level Made/Room - Lets go moving things.tscn" id="5_lw06l"]
+[ext_resource type="PackedScene" uid="uid://b2vbambcju6lx" path="res://assets/Levels/Level Made/Room - Bye Bye Slimeboy.tscn" id="6_voggs"]
+[ext_resource type="PackedScene" uid="uid://c4ore7d5ibqy3" path="res://assets/Levels/ThankYou.tscn" id="6_wcwiy"]
+
+[node name="GameManager" type="Node"]
+script = ExtResource("1_l48n6")
+_levelOrder = Array[PackedScene]([ExtResource("2_wn3dr"), ExtResource("3_gjxmb"), ExtResource("4_m0o4u"), ExtResource("5_lw06l"), ExtResource("6_wcwiy"), ExtResource("6_voggs")])
+_endScene = ExtResource("4_wbxke")
+secretCounter = Array[bool]([false, false, false, false])
+turnOnLight = false
+entryDialog = false
+slimeVialExit = false
+camTransLevel = false

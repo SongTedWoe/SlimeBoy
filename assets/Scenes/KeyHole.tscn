@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://5wv64lv4jdbv"]
+
+[ext_resource type="Script" path="res://scripts/Keyhole.gd" id="1_wcyyc"]
+[ext_resource type="Texture2D" uid="uid://df8rjhs1ye5rs" path="res://assets/sprites/TileMap4.png" id="2_4cf4n"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_frqir"]
+size = Vector2(6, 16)
+
+[node name="Keyhole" type="Area2D" node_paths=PackedStringArray("Key")]
+position = Vector2(-264, -184)
+collision_layer = 0
+collision_mask = 32
+monitorable = false
+script = ExtResource("1_wcyyc")
+Key = NodePath("")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_frqir")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, 7)
+texture = ExtResource("2_4cf4n")
+region_enabled = true
+region_rect = Rect2(161, 238, 14, 2)
